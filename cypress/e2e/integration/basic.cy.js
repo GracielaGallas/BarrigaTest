@@ -6,9 +6,10 @@ describe("Cypress basics", ()=>{
 
         cy.pause()    
 
-        cy.title()
-        .should("equal","Campo de Treinamento")
-        .and("contain","Campo")
+        cy
+            .title()
+            .should("equal","Campo de Treinamento")
+            .and("contain","Campo")
 
         //TODO imprimir o log no console
         //TODO escrever o titulo no campo de texto
@@ -17,9 +18,10 @@ describe("Cypress basics", ()=>{
 
     it("Should find an interact with an element", ()=> {
         cy.visit("https://www.wcaquino.me/cypress/componentes.html")
-        cy.get('#buttonSimple')
-        .click()
-        .should('have.value', "Obrigado!")
+        cy
+            .get('#buttonSimple')
+            .click()
+            .should('have.value', "Obrigado!")
         
     })
 })
