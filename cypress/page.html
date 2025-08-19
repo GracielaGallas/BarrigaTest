@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sandbox para Testes (Cypress)</title>
+  <style>
+    :root { --bg:#f6f7f9; --fg:#1f2937; --muted:#6b7280; --card:#fff; --bd:#e5e7eb; --ok:#065f46; --warn:#92400e; --err:#991b1b; --pri:#2563eb; }
+    body { font-family: Arial, Helvetica, sans-serif; margin: 24px; background: var(--bg); color:var(--fg); }
+    h1 { margin-top: 0; }
+    section { background:var(--card); border:1px solid var(--bd); border-radius:12px; padding:16px; margin-bottom:16px; }
+    .row { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+    label { font-size: 14px; color:#374151; }
+    input, select, textarea, button { padding:8px; border:1px solid #cbd5e1; border-radius:8px; }
+    input.error, textarea.error { border-color: var(--err); outline-color: var(--err); }
+    .error-msg { color: var(--err); font-size: 12px; margin-left: 4px; }
+    button { cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+    button[disabled] { opacity:.6; cursor: not-allowed; }
+    .muted { color:var(--muted); font-size:13px; }
+    .hidden { display:none; }
+    .chip { display:inline-block; padding:6px 10px; border-radius:999px; background:#eef2ff; border:1px solid var(--bd); font-size:12px; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { border:1px solid var(--bd); padding:8px; text-align:left; }
+
+    /* Toasts */
+    .toasts { position: fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:8px; z-index: 1000; }
+    .toast { background:#111827; color:#fff; padding:12px 14px; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,.25); min-width: 240px; }
+    .toast.ok { background:#065f46; }
+    .toast.err { background:#991b1b; }
+    .toast .title { font-weight:700; margin-right:8px; }
+
+    /* Spinner (botão ocupado) */
+    .spinner {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.5); border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <h1 data-testid="titulo-app">Sandbox para Testes (Cypress)</h1>
+  <p class="muted">Página para praticar seletores, asserts, upload, intercept, validações e fluxos de UI.</p>
+
+  <!-- Links e resultado -->
+  <section aria-labelledby="sec-links">
+    <h2 id="sec-links">Links e resultado</h2>
+    <div class="row">
+      <a href="#" id="link-voltar" data-testid="link-voltar">Voltar</a>
+      <a href="https://example.com" target="_blank" rel="noopener" data-testid="link-externo">Abrir site externo</a>
+      <span class="chip" id="resultado" data-testid="resultado">Pronto.</span>
+    </div>
+  </section>
+
+  <!-- Formulário básico -->
+  <section aria-labelledby="sec-form">
+    <h2 id="sec-form">Formulário</h2>
+    <form id="form-demo" data-testid="form-demo" novalidate>
+      <div class="row">
+        <label for="nome">Nome</label>
+        <input id="nome" name="nome" type="text" placeholder="Seu nome" data-testid="input-nome" required />
+        <span class="error-msg" id="err-nome" data-testid="err-nome" aria-live="polite"></span>
+      </div>
+      <div class="row">
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" placeholder="voce@exemplo.com" data-testid="input-email" />
+        <span class="error-msg" id="err-email" data-testid="err-email" aria-live="polite"></span>
+      </div>
+      <div class="row">
+        <label for="senha">Senha</label>
+        <input id="senha" name="senha" type="password" placeholder="••••••" data-testid="input-senha" />
+        <button type="button" id="toggle-senha" data-testid="btn-toggle-senha" aria-pressed="false">Mostrar senha</button>
+      </div>
+
+      <div class="row">
+        <label for="arquivo">Upload (png/jpg/jpeg/pdf, máx. 2MB)</label>
+        <input id="arquivo" name="arquivo" type="file" data-testid="input-file" />
+        <span class="muted" id="file-info" data-testid="file-info">Nenhum arquivo selecionado.</span>
+      </div>
+
+      <div class="row">
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio" rows="3" placeholder="Escreva algo..." data-testid="textarea-bio"></textarea>
+      </div>
+
+      <div class="row">
+        <fieldset>
+          <legend>Gênero (radio)</legend>
+          <label><input type="radio" name="genero" value="feminino" data-testid="radio-fem" /> Feminino</label>
+          <label><input type="radio" name="genero" value="masculino" data-testid="radio-masc" /> Masculino</label>
+          <label><input type="radio" name="genero" value="outro" data-testid="radio-outro" /> Outro</label>
+        </fieldset>
+      </div>
+
+      <div class="row">
+        <fieldset>
+          <legend>Preferências (checkbox)</legend>
+          <label><input type="checkbox" name="pref_email" value="sim" data-testid="chk-email" /> Receber e-mail</label>
+          <label><input type="checkbox" name="pref_sms" value="sim" data-testid="chk-sms" /> Receber SMS</label>
+          <label><input type="checkbox" name="pref_push" value="sim" data-testid="chk-push" /> Receber Push</label>
+        </fieldset>
+      </div>
+
+      <div class="row">
+        <label for="pais">País</label>
+        <select id="pais" name="pais" data-testid="select-pais">
+          <option value="">-- selecione --</option>
+          <option value="br">Brasil</option>
+          <option value="de">Alemanha</option>
+          <option value="us">Estados Unidos</option>
+        </select>
+
+        <label for="linguas">Idiomas (multi)</label>
+        <select id="linguas" name="linguas" multiple size="3" data-testid="select-linguas">
+          <option value="pt">Português</option>
+          <option value="en">Inglês</option>
+          <option value="de">Alemão</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="nascimento">Nascimento</label>
+        <input id="nascimento" type="date" data-testid="input-date" />
+        <label for="idade">Idade</label>
+        <input id="idade" type="number" min="0" max="120" step="1" data-testid="input-number" />
+        <label for="satisfacao">Satisfação</label>
+        <input id="satisfacao" type="range" min="0" max="10" step="1" data-testid="input-range" />
+      </div>
+
+      <div class="row">
+        <label>
+          <input id="termos" type="checkbox" data-testid="chk-termos" />
+          Aceito os termos
+        </label>
+        <span class="error-msg" id="err-termos" data-testid="err-termos" aria-live="polite"></span>
+      </div>
+
+      <div class="row">
+        <button type="submit" id="btn-salvar" data-testid="btn-salvar" disabled>
+          <span class="btn-label">Salvar</span>
+        </button>
+        <button type="reset" id="btn-limpar" data-testid="btn-limpar">Limpar</button>
+        <button type="button" id="btn-desabilitar" data-testid="btn-desabilitar">Desabilitar Nome</button>
+      </div>
+    </form>
+    <p class="muted">Última ação de formulário: <span id="log-form" data-testid="log-form">—</span></p>
+  </section>
+
+  <!-- Interações JS e API fake -->
+  <section aria-labelledby="sec-js">
+    <h2 id="sec-js">Interações JS</h2>
+    <div class="row">
+      <button id="btn-alert" data-testid="btn-alert">Disparar alert()</button>
+      <button id="btn-confirm" data-testid="btn-confirm">Disparar confirm()</button>
+      <button id="btn-prompt" data-testid="btn-prompt">Disparar prompt()</button>
+      <button id="btn-async" data-testid="btn-async">Atualização assíncrona (1s)</button>
+      <button id="btn-toggle" data-testid="btn-toggle">Mostrar/Esconder bloco</button>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <label>
+        <input type="checkbox" id="toggle-flaky" data-testid="toggle-flaky" />
+        Tornar API instável (50% de falha)
+      </label>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <button id="btn-api-get" data-testid="btn-api-get">GET /api/user (fake)</button>
+      <button id="btn-api-post" data-testid="btn-api-post">POST /api/save (fake)</button>
+    </div>
+
+    <div id="bloco-escondido" data-testid="bloco-escondido" class="hidden" aria-hidden="true" style="margin-top:10px;">
+      <span class="chip">Sou um bloco oculto</span>
+    </div>
+    <p>Saída JS: <span id="saida-js" data-testid="saida-js">—</span></p>
+  </section>
+
+  <!-- Tabela -->
+  <section aria-labelledby="sec-tabela">
+    <h2 id="sec-tabela">Tabela</h2>
+    <div class="row">
+      <label for="filtro">Filtrar por nome:</label>
+      <input id="filtro" type="text" placeholder="Digite para filtrar" data-testid="input-filtro" />
+    </div>
+    <table id="tabela-usuarios" data-testid="tabela-usuarios">
+      <thead>
+        <tr>
+          <th data-testid="th-nome">Nome</th>
+          <th data-testid="th-email">E-mail</th>
+          <th data-testid="th-status">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Ana</td><td>ana@example.com</td><td class="ok">Ativa</td>
+        </tr>
+        <tr>
+          <td>Bruno</td><td>bruno@example.com</td><td>Inativa</td>
+        </tr>
+        <tr>
+          <td>Carla</td><td>carla@example.com</td><td class="ok">Ativa</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Estado de elementos -->
+  <section aria-labelledby="sec-estado">
+    <h2 id="sec-estado">Estado de elementos</h2>
+    <div class="row">
+      <input id="campo-desabilitado" type="text" value="desabilitado" disabled data-testid="campo-desabilitado" />
+      <button id="btn-habilitar" data-testid="btn-habilitar">Habilitar campo</button>
+    </div>
+  </section>
+
+  <!-- Área de toasts -->
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    /* ============================
+       MOCK LOCAL DE API (fetch) c/ "flaky"
+       ============================ */
+    (function mockApi() {
+      const originalFetch = window.fetch ? window.fetch.bind(window) : null;
+      const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+      function flakyFail() {
+        const on = document.getElementById('toggle-flaky');
+        return on && on.checked && Math.random() < 0.5; // 50% falha
+      }
+
+      window.fetch = async function(input, init = {}) {
+        const url = typeof input === 'string' ? input : input.url;
+        const method = (init.method || 'GET').toUpperCase();
+
+        // Simula latência (300–800ms)
+        await sleep(300 + Math.floor(Math.random()*500));
+
+        // GET /api/user
+        if (url.endsWith('/api/user') && method === 'GET') {
+          if (flakyFail()) {
+            return new Response(JSON.stringify({ ok:false, error:'Falha intermitente (GET)' }), {
+              status: 503, headers: { 'Content-Type': 'application/json' }
+            });
+          }
+          return new Response(JSON.stringify({ name: 'Graciela', role: 'QA' }), {
+            status: 200, headers: { 'Content-Type': 'application/json' }
+          });
+        }
+
+        // POST /api/save
+        if (url.endsWith('/api/save') && method === 'POST') {
+          let body = {};
+          try { body = init.body ? JSON.parse(init.body) : {}; } catch(e) {}
+          if (flakyFail()) {
+            return new Response(JSON.stringify({ ok:false, error:'Falha intermitente (POST)' }), {
+              status: 500, headers: { 'Content-Type': 'application/json' }
+            });
+          }
+          // Validação servidor (nome)
+          if (!body || !body.nome || String(body.nome).trim().length < 3) {
+            return new Response(JSON.stringify({ ok:false, error:'Nome inválido' }), {
+              status: 400, headers: { 'Content-Type': 'application/json' }
+            });
+          }
+          return new Response(JSON.stringify({ ok:true, id: Date.now(), received: body }), {
+            status: 201, headers: { 'Content-Type': 'application/json' }
+          });
+        }
+
+        // Fallback
+        if (originalFetch) return originalFetch(input, init);
+        throw new Error('URL não mockada: ' + url);
+      };
+    })();
+
+    /* ============================
+       Utils: toasts e helpers
+       ============================ */
+    function showToast({ title = 'Info', message = '', type = 'ok', timeout = 2500 }) {
+      const wrap = document.getElementById('toasts');
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.innerHTML = `<span class="title">${title}</span><span>${message}</span>`;
+      wrap.appendChild(el);
+      setTimeout(() => { el.remove(); }, timeout);
+    }
+    function setBtnBusy(btn, busy, labelWhenBusy = 'Processando...') {
+      const span = btn.querySelector('.btn-label');
+      if (busy) {
+        btn.disabled = true;
+        btn.setAttribute('aria-busy', 'true');
+        btn.dataset.prev = span ? span.textContent : btn.textContent;
+        if (span) span.textContent = labelWhenBusy; else btn.textContent = labelWhenBusy;
+        const sp = document.createElement('span'); sp.className = 'spinner'; sp.setAttribute('data-testid','spinner');
+        btn.appendChild(sp);
+      } else {
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        const prev = btn.dataset.prev || 'Salvar';
+        const spanEl = btn.querySelector('.btn-label');
+        if (spanEl) spanEl.textContent = prev; else btn.textContent = prev;
+        const sp = btn.querySelector('.spinner'); if (sp) sp.remove();
+      }
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    /* ============================
+       Links / UI básica
+       ============================ */
+    document.getElementById('link-voltar').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('resultado').textContent = 'Voltou!';
+    });
+
+    // Toggle senha (corrigido e acessível)
+    const btnToggleSenha = document.getElementById('toggle-senha');
+    btnToggleSenha.addEventListener('click', () => {
+      const inp = document.getElementById('senha');
+      const mostrar = inp.type === 'password';
+      inp.type = mostrar ? 'text' : 'password';
+      btnToggleSenha.textContent = mostrar ? 'Esconder senha' : 'Mostrar senha';
+      btnToggleSenha.setAttribute('aria-pressed', String(mostrar));
+      document.getElementById('resultado').textContent = mostrar ? 'Senha visível.' : 'Senha oculta.';
+    });
+
+    /* ============================
+       Upload: validação tipo/tamanho
+       ============================ */
+    const allowed = ['image/png', 'image/jpeg', 'application/pdf'];
+    const maxBytes = 2 * 1024 * 1024; // 2MB
+    document.getElementById('arquivo').addEventListener('change', (e) => {
+      const info = document.getElementById('file-info');
+      const files = e.target.files;
+      if (!files || files.length === 0) { info.textContent = 'Nenhum arquivo selecionado.'; return; }
+      const f = files[0];
+      if (!allowed.includes(f.type)) {
+        info.textContent = 'Tipo inválido.'; showToast({ title:'Upload', message:'Tipo inválido (PNG/JPG/PDF).', type:'err' });
+        e.target.value = ''; return;
+      }
+      if (f.size > maxBytes) {
+        info.textContent = 'Arquivo muito grande (> 2MB).'; showToast({ title:'Upload', message:'Arquivo excede 2MB.', type:'err' });
+        e.target.value = ''; return;
+      }
+      info.textContent = `Selecionado: ${f.name} (${Math.round(f.size/1024)} KB)`;
+      showToast({ title:'Upload', message:'Arquivo validado.', type:'ok' });
+    });
+
+    /* ============================
+       Validação do formulário (inline) + habilitar botão
+       ============================ */
+    const form = document.getElementById('form-demo');
+    const logForm = document.getElementById('log-form');
+    const btnSalvar = document.getElementById('btn-salvar');
+    const nomeEl = document.getElementById('nome');
+    const emailEl = document.getElementById('email');
+    const errNome = document.getElementById('err-nome');
+    const errEmail = document.getElementById('err-email');
+    const termosEl = document.getElementById('termos');
+    const errTermos = document.getElementById('err-termos');
+
+    function validateNome() {
+      const v = nomeEl.value.trim();
+      if (v.length < 3) { nomeEl.classList.add('error'); errNome.textContent = 'Mínimo 3 caracteres.'; return false; }
+      nomeEl.classList.remove('error'); errNome.textContent = ''; return true;
+    }
+    function validateEmail() {
+      const v = emailEl.value.trim();
+      if (v && !emailRegex.test(v)) { emailEl.classList.add('error'); errEmail.textContent = 'E-mail inválido.'; return false; }
+      emailEl.classList.remove('error'); errEmail.textContent = ''; return true;
+    }
+    function validateTermos() {
+      if (!termosEl.checked) { errTermos.textContent = 'Obrigatório.'; return false; }
+      errTermos.textContent = ''; return true;
+    }
+    function updateSubmitState() {
+      const ok = validateNome() & validateEmail() & validateTermos(); // bitwise para forçar ambas validações
+      btnSalvar.disabled = !ok;
+    }
+    ['input','blur','change'].forEach(ev => {
+      nomeEl.addEventListener(ev, updateSubmitState);
+      emailEl.addEventListener(ev, updateSubmitState);
+      termosEl.addEventListener(ev, updateSubmitState);
+    });
+    updateSubmitState();
+
+    /* ============================
+       Submit/Reset
+       ============================ */
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (btnSalvar.disabled) { showToast({ title:'Erro', message:'Formulário inválido.', type:'err' }); return; }
+
+      const nome = nomeEl.value.trim();
+      setBtnBusy(btnSalvar, true, 'Salvando...');
+
+      try {
+        const res = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) { throw new Error(data.error || 'Falha ao salvar'); }
+        logForm.textContent = 'Salvo';
+        document.getElementById('resultado').textContent = 'Formulário enviado.';
+        showToast({ title:'Sucesso', message:'Dados salvos (fake).', type:'ok' });
+      } catch (err) {
+        logForm.textContent = 'Falha';
+        showToast({ title:'Erro', message:String(err.message || err), type:'err' });
+      } finally {
+        setBtnBusy(btnSalvar, false);
+      }
+    });
+
+    form.addEventListener('reset', () => {
+      logForm.textContent = 'Limpado';
+      document.getElementById('resultado').textContent = 'Formulário limpo.';
+      // Re-sincroniza rótulo do botão de senha após reset
+      const inp = document.getElementById('senha');
+      inp.type = 'password';
+      btnToggleSenha.textContent = 'Mostrar senha';
+      btnToggleSenha.setAttribute('aria-pressed', 'false');
+      // Limpa erros e estado do submit
+      [nomeEl, emailEl].forEach(el => el.classList.remove('error'));
+      [errNome, errEmail, errTermos].forEach(el => el.textContent = '');
+      termosEl.checked = false;
+      updateSubmitState();
+      showToast({ title:'Info', message:'Form resetado.', type:'ok' });
+    });
+
+    document.getElementById('btn-desabilitar').addEventListener('click', () => {
+      const nome = document.getElementById('nome');
+      nome.disabled = !nome.disabled;
+      document.getElementById('resultado').textContent = nome.disabled ? 'Nome desabilitado.' : 'Nome habilitado.';
+    });
+
+    /* ============================
+       JS diversos
+       ============================ */
+    document.getElementById('btn-alert').addEventListener('click', () => {
+      alert('Alerta simples'); // Cypress: cy.on('window:alert', ...)
+    });
+    document.getElementById('btn-confirm').addEventListener('click', () => {
+      const ok = confirm('Confirma a ação?'); // Cypress: cy.on('window:confirm', ...)
+      document.getElementById('saida-js').textContent = ok ? 'Confirmado' : 'Cancelado';
+      showToast({ title:'Confirm', message: ok ? 'Confirmado' : 'Cancelado', type: ok ? 'ok' : 'err' });
+    });
+    document.getElementById('btn-prompt').addEventListener('click', () => {
+      const val = prompt('Digite seu nome:', '');
+      document.getElementById('saida-js').textContent = val ? `Olá, ${val}` : 'Sem entrada';
+    });
+    document.getElementById('btn-async').addEventListener('click', () => {
+      const out = document.getElementById('saida-js');
+      out.textContent = 'Carregando...';
+      setTimeout(() => { out.textContent = 'Atualizado (async)'; }, 1000);
+    });
+    document.getElementById('btn-toggle').addEventListener('click', () => {
+      const b = document.getElementById('bloco-escondido');
+      b.classList.toggle('hidden');
+      b.setAttribute('aria-hidden', b.classList.contains('hidden') ? 'true' : 'false');
+    });
+
+    /* ============================
+       API fake (GET/POST) + botões desabilitados
+       ============================ */
+    const saida = document.getElementById('saida-js');
+
+    document.getElementById('btn-api-get').addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      setBtnBusy(btn, true, 'Carregando...');
+      try {
+        saida.textContent = 'GET /api/user ...';
+        const res = await fetch('/api/user', { method: 'GET' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'GET falhou');
+        saida.textContent = `User: ${data.name}`;
+        showToast({ title:'GET', message:`User: ${data.name}`, type:'ok' });
+      } catch (err) {
+        saida.textContent = 'GET falhou';
+        showToast({ title:'GET', message:String(err.message || err), type:'err' });
+      } finally {
+        setBtnBusy(btn, false);
+      }
+    });
+
+    document.getElementById('btn-api-post').addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      setBtnBusy(btn, true, 'Salvando...');
+      try {
+        const nome = nomeEl.value.trim() || 'Anon';
+        saida.textContent = 'POST /api/save ...';
+        const res = await fetch('/api/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || 'POST falhou');
+        saida.textContent = 'Salvo com sucesso (fake).';
+        showToast({ title:'POST', message:'Salvo com sucesso.', type:'ok' });
+      } catch (err) {
+        saida.textContent = 'POST falhou';
+        showToast({ title:'POST', message:String(err.message || err), type:'err' });
+      } finally {
+        setBtnBusy(btn, false);
+      }
+    });
+
+    /* ============================
+       Tabela / Filtro
+       ============================ */
+    document.getElementById('filtro').addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      document.querySelectorAll('#tabela-usuarios tbody tr').forEach(tr => {
+        const nome = tr.children[0].textContent.toLowerCase();
+        tr.style.display = nome.includes(term) ? '' : 'none';
+      });
+    });
+
+    /* ============================
+       Estado de elementos
+       ============================ */
+    document.getElementById('btn-habilitar').addEventListener('click', () => {
+      const campo = document.getElementById('campo-desabilitado');
+      campo.disabled = false;
+    });
+  </script>
+</body>
+</html>
