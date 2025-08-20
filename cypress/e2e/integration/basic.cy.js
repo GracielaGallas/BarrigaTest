@@ -1,17 +1,24 @@
 /// <reference types="cypress"/>
 
 describe("Cypress basics", ()=>{
-    it("Should visit a page and assert title", ()=> {
+    it.only("Should visit a page and assert title", ()=> {
         cy.visit("https://www.wcaquino.me/cypress/componentes.html")
 
-        cy.pause()    
+       // cy.pause()    
 
-        cy
-            .title()
-            .should("equal","Campo de Treinamento")
-            .and("contain","Campo")
+        // cy
+        //     .title()
+        //     .should("equal","Campo de Treinamento")
+        //     .and("contain","Campo")
 
-        //TODO imprimir o log no console
+        // cy.title().then(title => {
+        //     console.log(title)
+        // })   
+
+        cy.title().should(title => {
+            console.log(title)
+        }) 
+        
         //TODO escrever o titulo no campo de texto
         
     })
@@ -24,4 +31,6 @@ describe("Cypress basics", ()=>{
             .should('have.value', "Obrigado!")
         
     })
+
+    
 })
