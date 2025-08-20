@@ -88,13 +88,42 @@ describe("Work with basic elements", ()=> {
             .get('[data-test="dataEscolaridade"]')
             .select('especializacao')
             .should('have.value', 'especializacao')
-        //TODO validar as opcoes do combo    
+
+            cy.get('[data-test="dataEscolaridade"] option')
+                .then(($options) => {
+                const qtd = $options.length
+                cy.log('Quantidade de opções:', qtd)
+                console.log(qtd)
+                cy.get('[data-test="dataEscolaridade"] option').should('have.length', qtd)
+
+                cy.get('[data-test="dataEscolaridade"] option').then($arr => {
+                    const values = []
+                    $arr.each(function(){
+                        values.push(this.innerHTML)
+                    })
+                    console.log([values])
+                    expect(values).to.include.members(['Superior', 'Mestrado'])
+                })
+
+  })
+
+            cy.get('[data-test="dataEscolaridade"] option').should('have.length', 8)
+      
     })
 
-    it('Multiple ComboBox',()=>{
+    it.only('Multiple ComboBox',()=>{
         cy
             .get('[data-testid="dataEsportes"]')
             .select(['natacao', 'Corrida'])
-        //TODO validar as opcoes selecionadas
+
+       // cy.get('[data-testid="dataEsportes"]').should('have.value',['natacao', 'Corrida'] )  
+       
+       cy.get('[data-testid="dataEsportes"]').then($el =>{
+        expect($el.val()).to.be.deep.equal(['natacao', 'Corrida'])
+        expect($el.val()).to.have.length(2)
+       })
+        
+       cy.get('[data-testid="dataEsportes"]').invoke('val').should('eql',['natacao', 'Corrida'])
+       
     })
 })
