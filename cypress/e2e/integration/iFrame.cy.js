@@ -9,16 +9,18 @@ describe("Work with iFrames", ()=> {
                 .type('funciona?')
                 .should('have.value', 'funciona?')
 
-        cy.on('window:alert', msg => {
-            expect(msg).to.be.equal('Alert Simples')
-        })        
-        cy.wrap(body).find('#otherButton').click()
         })
-
-
-
     })
+
+    it('Deve testar frame diretamente', () => {
+        cy.visit('https://wcaquino.me/cypress/frame.html')        
+        cy.get('#otherButton').click()
+        cy.on('window:alert', msg => {
+            expect(msg).to.be.equal('Click OK!')
+        })
+        })
+    
+})    
 
     
 
-})
