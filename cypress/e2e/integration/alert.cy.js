@@ -6,11 +6,14 @@ describe("Work with alerts", ()=> {
     })
 
     it('Alert', ()=> {
-        cy.get('#alert').click()
-        cy.on('window:alert', msg =>{
-            console.log(msg)
-            expect(msg).equal('Alert Simples')
-        })
+        // cy.get('#alert').click()
+        // cy.on('window:alert', msg =>{
+        //     console.log(msg)
+        //     expect(msg).equal('Alert Simples')
+
+
+        cy.clickAlert('#alert','Alert Simples' )
+        
     })
 
     it('Alert with Mock', ()=> {

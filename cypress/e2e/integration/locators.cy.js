@@ -12,7 +12,7 @@ describe("Work with basic elements", ()=> {
         cy.get("[onclick*='Francisco']")
         cy.get("#tabelaUsuarios td:contains('Doutorado'):eq(0) ~ td:eq(3) > input").type('graciela')
         cy.get("#tabelaUsuarios tr:contains('Doutorado'):eq(0) td:eq(6) input").type('graciela')
-
+        
         
 
     })

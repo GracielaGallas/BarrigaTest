@@ -27,3 +27,11 @@
 Cypress.SelectorPlayground.defaults({
     selectorPriority: ['data-wc', 'data-cy', 'data-test', 'data-testid', 'id', 'class', 'attributes', 'tag', 'nth-child']
 })
+
+Cypress.Commands.add('clickAlert', (locator, message)=>{
+    cy.get(locator).click()
+    cy.on('window:alert', msg => {
+        expect(msg).to.be.equal(message)
+    })
+
+})
