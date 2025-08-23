@@ -19,4 +19,23 @@ describe("Dynamic tests", ()=> {
         cy.get('#resultado > :nth-child(1)').should('contain', 'Cadastrado!') 
         })  
     })  
+
+    it.only('Deve selecionar todos usando o each',() =>{
+
+        cy.get('#formNome').type('usuario')
+        cy.get('[data-cy="dataSobrenome"]').type('qualquer')
+        cy.get(`[name=formSexo][value=F]`).click()
+
+        cy.get('[name=formComidaFavorita]').each($el=>{
+           // $el.click()
+           if($el.val()!='vegetariano')
+           cy.wrap($el).click()
+        })
+
+        cy.get('#formEscolaridade').select('Especializacao')
+        cy.get('#formEsportes').select('Corrida')
+        cy.get('#formCadastrar').click()
+        cy.get('#resultado > :nth-child(1)').should('contain', 'Cadastrado!') 
+        //cy.clickAlert('#formCadastrar', 'Tem certeza que voce eh vegetariano?')
+    })
 })    
