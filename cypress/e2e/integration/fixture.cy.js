@@ -4,6 +4,7 @@ describe("Fixtures tests", ()=> {
 
     it('Get data from fixture file', function(){
         cy.visit("https://www.wcaquino.me/cypress/componentes.html")
+        
         cy.fixture('userData').as('usuario').then(() => {
             cy.get('#formNome').type(this.usuario.nome)
             cy.get('[data-cy="dataSobrenome"]').type(this.usuario.sobrenome)
