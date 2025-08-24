@@ -55,6 +55,16 @@ describe("all functional tests", () => {
         })
     })    
 
+    it('Should get balance',()=>{
+        cy.fixture('barrigaData').then((dados) => {
+            cy.get(loc.MENU.HOME).click()
+            cy.contains('td', dados.transaction_account)
+                .next()                                     
+                .invoke('text').then(t => t.replace(/\u00a0/g, ' ').trim())
+                .should('contain', 'R$ 5.000,00') 
+        })
+    })
+
     it('should reset database',()=>{
         cy.resetApp() 
     })
