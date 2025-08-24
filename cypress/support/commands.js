@@ -24,9 +24,26 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+import loc from './locators'
+
 Cypress.SelectorPlayground.defaults({
     selectorPriority: ['data-wc', 'data-cy', 'data-test', 'data-testid', 'id', 'class', 'attributes', 'tag', 'nth-child']
 })
 
 
+
+Cypress.Commands.add('login', (user,password)=>{
+    cy.visit("https://barrigareact.wcaquino.me/")
+ 
+      cy.get(loc.LOGIN.USER).type(user)
+      cy.get(loc.LOGIN.PASSWORD).type(password)
+      cy.get(loc.LOGIN.BTN_LOGIN).click()
+      cy.get(loc.MESSAGE).should('contain', 'Bem vindo')
+ 
+})
+
+Cypress.Commands.add('resetApp',()=>{
+    cy.get(loc.MENU.SETTINGS).click()
+    cy.get(loc.MENU.RESET).click()
+})
 

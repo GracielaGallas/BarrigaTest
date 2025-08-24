@@ -4,14 +4,9 @@ import loc from '../../../support/locators'
 
 describe("all functional tests", () => {
   beforeEach(() => {
-    cy.visit("https://barrigareact.wcaquino.me/")
-    cy.fixture('barrigaData').then((dados) => {
-      cy.get(loc.LOGIN.USER).type(dados.email)
-      cy.get(loc.LOGIN.PASSWORD).type(dados.psw)
-      cy.get(loc.LOGIN.BTN_LOGIN).click()
-      cy.get(loc.MESSAGE).should('contain', 'Bem vindo')
-      
-    })
+     cy.fixture('barrigaData').then((dados) => {
+      cy.login(dados.email, dados.psw)
+     })
   })
  
     it('Should create a new account', ()=>{
@@ -34,6 +29,10 @@ describe("all functional tests", () => {
         cy.get(loc.MESSAGE).should('contain', 'sucesso')
 
     })
+    it('should reset database',()=>{
+        cy.resetApp() 
+    })
+    
     
 })
 
