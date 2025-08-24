@@ -65,6 +65,17 @@ describe("all functional tests", () => {
         })
     })
 
+    it('Should delete a transaction', ()=>{
+        cy.fixture('barrigaData').then((dados) => {
+            cy.get(loc.MENU.BALANCE).click()
+            cy.contains('[data-test="mov-row"]', dados.transaction_description)
+                .find('i.fa-trash-alt')
+                .click()
+            cy.get(loc.MESSAGE).should('contain', dados.msg_sucessful)    
+            })
+            
+    })
+
     it('should reset database',()=>{
         cy.resetApp() 
     })

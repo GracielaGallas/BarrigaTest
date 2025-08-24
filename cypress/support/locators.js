@@ -11,7 +11,8 @@ const locators = {
         ACCOUNTS: '[href="/contas"]',
         RESET: '[href="/reset"]',
         TRANSACTION: '[data-test="menu-movimentacao"]',
-        HOME: '[data-test="menu-home"]'
+        HOME: '[data-test="menu-home"]',
+        BALANCE: '[data-test="menu-extrato"]'
     },
     ACCOUNTS_PAGE:{
         NAME: '[data-test="nome"]',
