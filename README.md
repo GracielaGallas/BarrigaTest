@@ -7,4 +7,4 @@
  - Attempt to insert duplicate account
  - Insert transaction
  - Calculate balance
- - Receive transaction
+ - Remove a transaction

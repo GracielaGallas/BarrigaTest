@@ -10,7 +10,8 @@ const locators = {
         SETTINGS: '[data-test="menu-settings"]',
         ACCOUNTS: '[href="/contas"]',
         RESET: '[href="/reset"]',
-        TRANSACTION: '[data-test="menu-movimentacao"]'
+        TRANSACTION: '[data-test="menu-movimentacao"]',
+        HOME: '[data-test="menu-home"]'
     },
     ACCOUNTS_PAGE:{
         NAME: '[data-test="nome"]',
