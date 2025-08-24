@@ -89,7 +89,7 @@ describe("all backend tests", () => {
     })
 
     it('should reset database', () => {
-        // cy.resetApp() 
+        cy.resetRest()
     })
 
 
