@@ -9,12 +9,21 @@ const locators = {
     MENU: {
         SETTINGS: '[data-test="menu-settings"]',
         ACCOUNTS: '[href="/contas"]',
-        RESET: '[href="/reset"]'
+        RESET: '[href="/reset"]',
+        TRANSACTION: '[data-test="menu-movimentacao"]'
     },
     ACCOUNTS_PAGE:{
         NAME: '[data-test="nome"]',
         BTN_SAVE: '.btn'
-        
+    },
+    TRANSACTION_PAGE:{
+        T_DESCRIPTION: '[data-test="descricao"]',
+        T_VALUE: '[data-test="valor"]',
+        T_INTERESTED: '[data-test="envolvido"]',
+        T_ACCOUNT: '[data-test="conta"]',
+        T_STATUS: '[data-test="status"]',
+        T_BTN_SAVE: '.btn-primary',
+        T_TABLE: '[data-test="mov-row"]'
     },
     MESSAGE:'.toast-message'
 }

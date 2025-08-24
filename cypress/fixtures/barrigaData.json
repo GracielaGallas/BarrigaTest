@@ -1,4 +1,11 @@
 {
     "email": "graciela.carmen@gmail.com",
-    "psw": "curso"
+    "psw": "curso",
+    "new_account": "conta Graciela",
+    "msg_sucessful": "sucesso",
+    "msg_error": "Request failed",
+    "transaction_description": "Salary",
+    "transaction_value": "5000",
+    "transaction_interested": "Graci",
+    "transaction_account": "conta Graciela Alterada"
 }
