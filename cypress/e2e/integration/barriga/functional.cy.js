@@ -26,6 +26,12 @@ describe("all functional tests", () => {
 
     })
 
+    it('Should try to add account with the same name', ()=>{
+        cy.accountsAccess()
+        cy.insertAccount('conta Graciela Alterada')
+        cy.get(loc.MESSAGE).should('contain', 'Request failed')
+    
+    })
     
     it('should reset database',()=>{
         cy.resetApp() 
