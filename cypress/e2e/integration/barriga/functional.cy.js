@@ -1,6 +1,7 @@
 /// <reference types="cypress"/>
 
 import loc from '../../../support/locators'
+import '../../../support/commandsAccount'
 
 describe("all functional tests", () => {
   beforeEach(() => {
@@ -10,25 +11,22 @@ describe("all functional tests", () => {
   })
  
     it('Should create a new account', ()=>{
-
-        cy.get(loc.MENU.SETTINGS).click()
-        cy.get(loc.MENU.ACCOUNTS).click()
-        cy.get(loc.ACCOUNTS_PAGE.NAME).type('conta Graciela')
-        cy.get(loc.ACCOUNTS_PAGE.BTN_SAVE).click()
+        cy.accountsAccess()
+        cy.insertAccount('conta Graciela')
         cy.get(loc.MESSAGE).should('contain', 'inserida com sucesso')
     
     })  
 
     it('Should change an account', ()=>{
-        
-        cy.get(loc.MENU.SETTINGS).click()
-        cy.get(loc.MENU.ACCOUNTS).click()
+        cy.accountsAccess()
         cy.contains('td', 'conta Graciela').parent('tr').find('i.fa-edit').click()
         cy.get(loc.ACCOUNTS_PAGE.NAME).clear().type('conta Graciela Alterada')
         cy.get(loc.ACCOUNTS_PAGE.BTN_SAVE).click()
         cy.get(loc.MESSAGE).should('contain', 'sucesso')
 
     })
+
+    
     it('should reset database',()=>{
         cy.resetApp() 
     })
