@@ -83,23 +83,22 @@ describe("all backend tests", () => {
     })
 
     it('Should get balance', () => {
-        // cy.fixture('barrigaData').then((dados) => {
-        //     cy.get(loc.MENU.HOME).click()
-        //     cy.contains('td', dados.transaction_account)
-        //         .next()                                     
-        //         .invoke('text').then(t => t.replace(/\u00a0/g, ' ').trim())
-        //         .should('contain', 'R$ 5.000,00') 
-        // })
+        cy.request({
+            url: '/saldo',
+            method: 'GET',
+            headers: { Authorization: `JWT ${token}` },
+        }).then(res => {
+            let balanceAccount = null
+            res.body.forEach(a => {
+                if (a.conta === 'Conta Graciela alterada via Rest')
+                    balanceAccount = a.saldo
+            })
+            expect(balanceAccount).to.be.equal('5500.00')
+            console.log(balanceAccount)
+        })
     })
 
     it('Should delete a transaction', () => {
-        // cy.fixture('barrigaData').then((dados) => {
-        //     cy.get(loc.MENU.BALANCE).click()
-        //     cy.contains('[data-test="mov-row"]', dados.transaction_description)
-        //         .find('i.fa-trash-alt')
-        //         .click()
-        //     cy.get(loc.MESSAGE).should('contain', dados.msg_sucessful)    
-        //     })
 
     })
 
