@@ -106,12 +106,18 @@ describe("all backend tests", () => {
     })
 
     it('Should delete a transaction', () => {
+        cy.request({
+            url: `/transacoes/${transactionId}`,
+            method: 'DELETE',
+            headers: { Authorization: `JWT ${token}` },
+        }).its('status').should('be.equal', 204)
+        cy.log('transaction deleted')
 
     })
 
-    // it('should reset database', () => {
-    //     cy.resetRest()
-    // })
+    it('should reset database', () => {
+        cy.resetRest()
+    })
 
 
 })
