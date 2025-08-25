@@ -3,6 +3,7 @@
 describe("all backend tests", () => {
     let token
     let accountId
+    let transactionId
 
     before(() => {
         cy.getToken('graciela.carmen@gmail.com', 'curso')
@@ -27,7 +28,7 @@ describe("all backend tests", () => {
 
             accountId = res.body.id
             cy.log('Conta criada com id: ' + accountId)
-            console.log(accountId)
+            console.log('account id: '+accountId)
         })
     })
 
@@ -79,6 +80,11 @@ describe("all backend tests", () => {
         }).then(res => {
             expect(res.status).to.equal(201)
             expect(res.body).to.have.property('descricao', 'Transaction Graci Rest')
+            expect(res.body).to.have.property('id')
+
+            transactionId = res.body.id
+            cy.log('transaction id is: '+transactionId)
+            console.log('transaction id is: '+transactionId)
         })
     })
 
@@ -94,7 +100,8 @@ describe("all backend tests", () => {
                     balanceAccount = a.saldo
             })
             expect(balanceAccount).to.be.equal('5500.00')
-            console.log(balanceAccount)
+            cy.log('balance account is: ' +balanceAccount)
+            console.log('balance account is: ' +balanceAccount)
         })
     })
 
@@ -102,9 +109,9 @@ describe("all backend tests", () => {
 
     })
 
-    it('should reset database', () => {
-        cy.resetRest()
-    })
+    // it('should reset database', () => {
+    //     cy.resetRest()
+    // })
 
 
 })
