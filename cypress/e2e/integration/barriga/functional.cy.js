@@ -5,9 +5,9 @@ import '../../../support/commandsAccount'
 
 describe("all functional tests", () => {
     beforeEach(() => {
-        cy.fixture('barrigaData').then((dados) => {
-            cy.login(dados.email, dados.psw)
-        })
+        const email = Cypress.env('email')
+        const psw = Cypress.env('psw')
+        cy.login(email, psw)
     })
 
     it('Should create a new account', () => {
