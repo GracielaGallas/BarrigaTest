@@ -47,58 +47,68 @@ describe("all backend tests", () => {
 
     })
 
-        it('Should try to add account with the same name', () => {
-            // cy.fixture('barrigaData').then((dados) => {
-            //     cy.accountsAccess()
-            //     cy.insertAccount(dados.transaction_account)
-            //     cy.get(loc.MESSAGE).should('contain', dados.msg_error)
-            // })
-
+    it('Should try to add account with the same name', () => {
+        cy.request({
+            url: '/contas',
+            method: 'POST',
+            headers: { Authorization: `JWT ${token}` },
+            body: {
+                nome: 'Conta Graciela alterada via Rest'
+            },
+            failOnStatusCode: false
+        }).then(res => {
+            expect(res.status).to.equal(400)
         })
+    })
 
-        it('Should add a transaction', () => {
-            // cy.fixture('barrigaData').then((dados) => {
-            //     cy.get(loc.MENU.TRANSACTION).click()
-            //     cy.get(loc.TRANSACTION_PAGE.T_DESCRIPTION).type(dados.transaction_description)
-            //     cy.get(loc.TRANSACTION_PAGE.T_VALUE).type(dados.transaction_value)
-            //     cy.get(loc.TRANSACTION_PAGE.T_INTERESTED).type(dados.transaction_interested)
-            //     cy.get(loc.TRANSACTION_PAGE.T_ACCOUNT).select(dados.transaction_account)
-            //     cy.get(loc.TRANSACTION_PAGE.T_STATUS).click()
-            //     cy.get(loc.TRANSACTION_PAGE.T_BTN_SAVE).click()
-            //     cy.get(loc.MESSAGE).should('contain', dados.msg_sucessful)
-            //     cy.get(loc.TRANSACTION_PAGE.T_TABLE).contains(dados.transaction_description)
-            //         .parents('[data-test="mov-row"]')
-            //         .should('contain', dados.transaction_description) 
-            // })
+    it('Should add a transaction', () => {
+        cy.request({
+            url: '/transacoes',
+            method: 'POST',
+            headers: { Authorization: `JWT ${token}` },
+            body: {
+                conta_id: `${accountId}`,
+                data_pagamento: '25/08/2025',
+                data_transacao: '25/08/2025',
+                descricao: 'Transaction Graci Rest',
+                envolvido: 'Graci',
+                status: true,
+                tipo: 'REC',
+                valor: '5500'
+            }
+        }).then(res => {
+            expect(res.status).to.equal(201)
+            expect(res.body).to.have.property('descricao', 'Transaction Graci Rest')
         })
+    })
 
-        it('Should get balance', () => {
-            // cy.fixture('barrigaData').then((dados) => {
-            //     cy.get(loc.MENU.HOME).click()
-            //     cy.contains('td', dados.transaction_account)
-            //         .next()                                     
-            //         .invoke('text').then(t => t.replace(/\u00a0/g, ' ').trim())
-            //         .should('contain', 'R$ 5.000,00') 
-            // })
-        })
+    it('Should get balance', () => {
+        // cy.fixture('barrigaData').then((dados) => {
+        //     cy.get(loc.MENU.HOME).click()
+        //     cy.contains('td', dados.transaction_account)
+        //         .next()                                     
+        //         .invoke('text').then(t => t.replace(/\u00a0/g, ' ').trim())
+        //         .should('contain', 'R$ 5.000,00') 
+        // })
+    })
 
-        it('Should delete a transaction', () => {
-            // cy.fixture('barrigaData').then((dados) => {
-            //     cy.get(loc.MENU.BALANCE).click()
-            //     cy.contains('[data-test="mov-row"]', dados.transaction_description)
-            //         .find('i.fa-trash-alt')
-            //         .click()
-            //     cy.get(loc.MESSAGE).should('contain', dados.msg_sucessful)    
-            //     })
-
-        })
-
-        it('should reset database', () => {
-            cy.resetRest()
-        })
-
+    it('Should delete a transaction', () => {
+        // cy.fixture('barrigaData').then((dados) => {
+        //     cy.get(loc.MENU.BALANCE).click()
+        //     cy.contains('[data-test="mov-row"]', dados.transaction_description)
+        //         .find('i.fa-trash-alt')
+        //         .click()
+        //     cy.get(loc.MESSAGE).should('contain', dados.msg_sucessful)    
+        //     })
 
     })
+
+    it('should reset database', () => {
+        cy.resetRest()
+    })
+
+
+})
 
 
 
