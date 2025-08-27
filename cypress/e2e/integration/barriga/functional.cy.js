@@ -1,4 +1,4 @@
-/// <reference types="cypress"/>
+/// <reference types="cypress" />
 
 import loc from '../../../support/locators'
 import '../../../support/commandsAccount'

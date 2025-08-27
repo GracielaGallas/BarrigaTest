@@ -1,15 +1,12 @@
-/// <reference types="cypress"/>
+/// <reference types="cypress" />
 
 describe("all backend tests", () => {
-    let token
+
     let accountId
     let transactionId
 
     before(() => {
         cy.getToken('graciela.carmen@gmail.com', 'curso')
-            .then(tkn => {
-                token = tkn
-            })
     })
 
 
@@ -17,7 +14,6 @@ describe("all backend tests", () => {
         cy.request({
             url: '/contas',
             method: 'POST',
-            headers: { Authorization: `JWT ${token}` },
             body: {
                 nome: 'Conta Graciela via Rest'
             }
@@ -32,12 +28,10 @@ describe("all backend tests", () => {
         })
     })
 
-
     it('Should change an account', () => {
         cy.request({
             url: `/contas/${accountId}`,
             method: 'PUT',
-            headers: { Authorization: `JWT ${token}` },
             body: {
                 nome: 'Conta Graciela alterada via Rest'
             }
@@ -52,7 +46,6 @@ describe("all backend tests", () => {
         cy.request({
             url: '/contas',
             method: 'POST',
-            headers: { Authorization: `JWT ${token}` },
             body: {
                 nome: 'Conta Graciela alterada via Rest'
             },
@@ -66,7 +59,6 @@ describe("all backend tests", () => {
         cy.request({
             url: '/transacoes',
             method: 'POST',
-            headers: { Authorization: `JWT ${token}` },
             body: {
                 conta_id: `${accountId}`,
                 data_pagamento: '25/08/2025',
@@ -92,7 +84,6 @@ describe("all backend tests", () => {
         cy.request({
             url: '/saldo',
             method: 'GET',
-            headers: { Authorization: `JWT ${token}` },
         }).then(res => {
             let balanceAccount = null
             res.body.forEach(a => {
@@ -109,7 +100,6 @@ describe("all backend tests", () => {
         cy.request({
             url: `/transacoes/${transactionId}`,
             method: 'DELETE',
-            headers: { Authorization: `JWT ${token}` },
         }).its('status').should('be.equal', 204)
         cy.log('transaction deleted')
 
@@ -118,7 +108,6 @@ describe("all backend tests", () => {
     it('should reset database', () => {
         cy.resetRest()
     })
-
 
 })
 
