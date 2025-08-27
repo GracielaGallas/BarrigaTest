@@ -32,12 +32,13 @@ Cypress.Commands.add('getToken', (user, psw)=>{
             }
         }).its('body.token').should('not.be.empty')
         .then(token => {
+            Cypress.env('token', token)
             return token
         })
 })
 
 Cypress.Commands.add('resetRest',()=>{
-    cy.getToken('graciela.carmen@gmail.com', 'curso')
+    cy.getToken(Cypress.env('email'), Cypress.env('psw'))
     .then(token => {
         cy.request({
             method: 'GET',
@@ -45,5 +46,18 @@ Cypress.Commands.add('resetRest',()=>{
             headers: { Authorization: `JWT ${token}` }
         }).its('status').should('be.equal', 200)
     })
+})
+
+Cypress.Commands.overwrite('request', (originalFn, ...options) => {
+    if (options.length === 1) {
+        if (Cypress.env('token')) {
+            console.log(options)
+            options[0].headers = {
+                Authorization: `JWT ${Cypress.env('token')}`
+            }
+        }
+    }
+
+    return originalFn(...options)
 })
 
