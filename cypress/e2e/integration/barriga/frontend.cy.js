@@ -2,46 +2,18 @@
 
 import loc from '../../../support/locators'
 import '../../../support/commandsAccount'
+import buildEnv from '../../../support/buildEnv'
 
 describe("all functional tests", () => {
     beforeEach(() => {
         const email = "email"
         const psw = "psw"
-        cy.intercept({
-            method: 'POST',
-            url: '/signin'
-        },
-            {
-                id: 2000,
-                nome: 'fake user',
-                token: 'something that is not a real token'
-            }).as('signin')
-        cy.intercept(
-            {
-                method: 'GET',
-                url: '/saldo'
-            },
-            [
-                {
-                    conta_id: 123456,
-                    conta: "Conta fake",
-                    saldo: "123456"
-                },
-                {
-                    conta_id: 789101,
-                    conta: "Conta fake 2",
-                    saldo: "654321"
-                }
-            ]
-        ).as('saldo')
+        buildEnv()
         cy.login(email, psw)
     })
 
     it('Should create a new account', () => {
         cy.fixture('barrigaData').then((dados) => {
-            cy.intercept('GET', '/contas', [
-                { id: 12345, nome: "old account", visivel: true, usuario_id: 12345 }
-            ]).as('checkAccount')
             cy.accountsAccess()
             cy.intercept('POST', '/contas', {
                 id: 12346,
@@ -65,8 +37,8 @@ describe("all functional tests", () => {
             const account = { id: 12345, nome: dados.new_account, visivel: true, usuario_id: 12345 }
 
             cy.intercept('GET', '/contas', (req) => {
-                req.reply([account])
-            }).as('firstView')
+                req.reply([account]);
+            }).as('checkAccount');
             cy.intercept('PUT', '/contas/12345', (req) => {
                 account.nome = dados.transaction_account;
                 req.reply(account);
@@ -89,28 +61,56 @@ describe("all functional tests", () => {
     });
 
     it('Should try to add account with the same name', () => {
-        // cy.fixture('barrigaData').then((dados) => {
-        //     cy.accountsAccess()
-        //     cy.insertAccount(dados.transaction_account)
-        //     cy.get(loc.MESSAGE).should('contain', dados.msg_error)
-        // })
+        cy.fixture('barrigaData').then((dados) => {
+            cy.intercept('POST', '/contas', {
+                "error": "Já existe uma conta com esse nome!"
+            }).as('errorAddAccount')
+            cy.accountsAccess()
+            cy.insertAccount(dados.transaction_account)
+            cy.get(loc.MESSAGE).should('contain', dados.msg_error)
+        })
 
     })
 
-    it('Should add a transaction', () => {
-        // cy.fixture('barrigaData').then((dados) => {
-        //     cy.get(loc.MENU.TRANSACTION).click()
-        //     cy.get(loc.TRANSACTION_PAGE.T_DESCRIPTION).type(dados.transaction_description)
-        //     cy.get(loc.TRANSACTION_PAGE.T_VALUE).type(dados.transaction_value)
-        //     cy.get(loc.TRANSACTION_PAGE.T_INTERESTED).type(dados.transaction_interested)
-        //     cy.get(loc.TRANSACTION_PAGE.T_ACCOUNT).select(dados.transaction_account)
-        //     cy.get(loc.TRANSACTION_PAGE.T_STATUS).click()
-        //     cy.get(loc.TRANSACTION_PAGE.T_BTN_SAVE).click()
-        //     cy.get(loc.MESSAGE).should('contain', dados.msg_sucessful)
-        //     cy.get(loc.TRANSACTION_PAGE.T_TABLE).contains(dados.transaction_description)
-        //         .parents('[data-test="mov-row"]')
-        //         .should('contain', dados.transaction_description)
-        // })
+    it.only('Should add a transaction', () => {
+        cy.fixture('barrigaData').then((dados) => {
+            cy.intercept({
+                method: 'POST',
+                url: '/transacoes'
+            },
+                {
+                    "id": 2371089,
+                    "descricao": "asdsafaf",
+                    "envolvido": "fadfaf",
+                    "observacao": null,
+                    "tipo": "REC",
+                    "data_transacao": "2025-08-29T03:00:00.000Z",
+                    "data_pagamento": "2025-08-29T03:00:00.000Z",
+                    "valor": "3123.00",
+                    "status": false,
+                    "conta_id": 2526918,
+                    "usuario_id": 62575,
+                    "transferencia_id": null,
+                    "parcelamento_id": null
+                }).as('saveTransaction')
+
+            cy.get(loc.MENU.TRANSACTION).click()
+            cy.get(loc.TRANSACTION_PAGE.T_DESCRIPTION).type(dados.transaction_description)
+            cy.get(loc.TRANSACTION_PAGE.T_VALUE).type(dados.transaction_value)
+            cy.get(loc.TRANSACTION_PAGE.T_INTERESTED).type(dados.transaction_interested)
+            cy.get(loc.TRANSACTION_PAGE.T_ACCOUNT).select('old account')
+            cy.get(loc.TRANSACTION_PAGE.T_STATUS).click()
+
+            cy.intercept('GET', '/contas', [
+                { id: 2526918, nome: 'old account', visivel: true, usuario_id: 62575 }
+            ]).as('accountsAfter');
+            
+            cy.get(loc.TRANSACTION_PAGE.T_BTN_SAVE).click()
+            cy.get(loc.MESSAGE).should('contain', dados.msg_sucessful)
+            cy.get(loc.TRANSACTION_PAGE.T_TABLE).contains(dados.transaction_description)
+                .parents('[data-test="mov-row"]')
+                .should('contain', dados.transaction_description)
+        })
     })
 
     it('Should get balance', () => {
