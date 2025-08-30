@@ -78,7 +78,7 @@ describe("all functional tests", () => {
             cy.intercept({
                 method: 'POST',
                 url: '/transacoes'
-            },dados.new_transaction).as('saveTransaction')
+            }, dados.new_transaction).as('saveTransaction')
 
             cy.get(loc.MENU.TRANSACTION).click()
             cy.get(loc.TRANSACTION_PAGE.T_DESCRIPTION).type(dados.transaction_description)
@@ -90,7 +90,7 @@ describe("all functional tests", () => {
             cy.intercept('GET', '/contas', [
                 { id: 2526918, nome: 'old account', visivel: true, usuario_id: 62575 }
             ]).as('accountsAfter');
-            
+
             cy.get(loc.TRANSACTION_PAGE.T_BTN_SAVE).click()
             cy.get(loc.MESSAGE).should('contain', dados.msg_sucessful)
             cy.get(loc.TRANSACTION_PAGE.T_TABLE).contains(dados.transaction_description)
@@ -110,22 +110,48 @@ describe("all functional tests", () => {
     })
 
     it('Should delete a transaction', () => {
-        // cy.fixture('barrigaData').then((dados) => {
-        //     cy.get(loc.MENU.BALANCE).click()
-        //     cy.contains('[data-test="mov-row"]', dados.transaction_description)
-        //         .find('i.fa-trash-alt')
-        //         .click()
-        //     cy.get(loc.MESSAGE).should('contain', dados.msg_sucessful)
-        // })
+        cy.fixture('barrigaData').then((dados) => {
+            cy.intercept(
+                {
+                    method: 'DELETE',
+                    url: '/transacoes/**',
+                },
+                (req) => {
+                    req.reply(204)   // responde só com status 204 e sem body
+                }
+            ).as('deleteTransaction')
+
+            // aqui vem a ação que dispara o delete
+            cy.get(loc.MENU.BALANCE).click()
+            cy.contains('[data-test="mov-row"]', dados.transaction_description)
+                .find('i.fa-trash-alt')
+                .click()
+
+            cy.wait('@deleteTransaction')
+            cy.get(loc.MESSAGE).should('contain', 'Movimentação removida com sucesso!')
+
+        })
 
     })
 
-    // it('should reset database', () => {
-    //     cy.resetApp()
-    // })
+    it.only('Should check colors', () => {
+        cy.fixture('barrigaData').then((dados) => {
+            cy.intercept({
+                method: 'GET',
+                url: '/extrato/**'
+            },dados.colors_account).as('viewBalance')
+            cy.get(loc.MENU.BALANCE).click()
+            cy.get('[data-test="mov-row"].receitaPaga')
+                .should('have.css', 'background-color', 'rgb(244, 249, 245)')
+            cy.get('[data-test="mov-row"].receitaPendente')
+                .should('have.css', 'background-color', 'rgb(233, 241, 225)')
+            cy.get('[data-test="mov-row"].despesaPaga')
+                .should('have.css', 'background-color', 'rgb(253, 247, 247)')
+            cy.get('[data-test="mov-row"].despesaPendente')
+                .should('have.css', 'background-color', 'rgb(250, 225, 225)')
 
+        })
+    })
 
-})
-
-
+ })
 
