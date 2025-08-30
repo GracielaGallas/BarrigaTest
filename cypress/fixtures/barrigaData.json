@@ -5,5 +5,36 @@
     "transaction_description": "Salary",
     "transaction_value": "5000",
     "transaction_interested": "Graci",
-    "transaction_account": "conta Graciela Alterada"
+    "transaction_account": "conta Graciela Alterada",
+    "new_transaction":{
+                    "id": 2371089,
+                    "descricao": "asdsafaf",
+                    "envolvido": "fadfaf",
+                    "observacao": null,
+                    "tipo": "REC",
+                    "data_transacao": "2025-08-29T03:00:00.000Z",
+                    "data_pagamento": "2025-08-29T03:00:00.000Z",
+                    "valor": "3123.00",
+                    "status": false,
+                    "conta_id": 2526918,
+                    "usuario_id": 62575,
+                    "transferencia_id": null,
+                    "parcelamento_id": null
+                },
+    "balance_account": {
+                "conta": "Conta para extrato",
+                "id": 2371095,
+                "descricao": "Salary",
+                "envolvido": "FFF",
+                "observacao": null,
+                "tipo": "DESP",
+                "data_transacao": "2025-08-29T03:00:00.000Z",
+                "data_pagamento": "2025-08-29T03:00:00.000Z",
+                "valor": "-220.00",
+                "status": true,
+                "conta_id": 2526929,
+                "usuario_id": 62575,
+                "transferencia_id": null,
+                "parcelamento_id": null
+            }            
 }
