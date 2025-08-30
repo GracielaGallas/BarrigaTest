@@ -4,6 +4,7 @@ import loc from '../../../support/locators'
 import '../../../support/commandsAccount'
 import buildEnv from '../../../support/buildEnv'
 
+
 describe("all functional tests", () => {
     beforeEach(() => {
         const email = "email"
@@ -72,27 +73,12 @@ describe("all functional tests", () => {
 
     })
 
-    it.only('Should add a transaction', () => {
+    it('Should add a transaction', () => {
         cy.fixture('barrigaData').then((dados) => {
             cy.intercept({
                 method: 'POST',
                 url: '/transacoes'
-            },
-                {
-                    "id": 2371089,
-                    "descricao": "asdsafaf",
-                    "envolvido": "fadfaf",
-                    "observacao": null,
-                    "tipo": "REC",
-                    "data_transacao": "2025-08-29T03:00:00.000Z",
-                    "data_pagamento": "2025-08-29T03:00:00.000Z",
-                    "valor": "3123.00",
-                    "status": false,
-                    "conta_id": 2526918,
-                    "usuario_id": 62575,
-                    "transferencia_id": null,
-                    "parcelamento_id": null
-                }).as('saveTransaction')
+            },dados.new_transaction).as('saveTransaction')
 
             cy.get(loc.MENU.TRANSACTION).click()
             cy.get(loc.TRANSACTION_PAGE.T_DESCRIPTION).type(dados.transaction_description)
@@ -114,13 +100,13 @@ describe("all functional tests", () => {
     })
 
     it('Should get balance', () => {
-        // cy.fixture('barrigaData').then((dados) => {
-        //     cy.get(loc.MENU.HOME).click()
-        //     cy.contains('td', dados.transaction_account)
-        //         .next()
-        //         .invoke('text').then(t => t.replace(/\u00a0/g, ' ').trim())
-        //         .should('contain', 'R$ 5.000,00')
-        // })
+        cy.fixture('barrigaData').then((dados) => {
+            cy.get(loc.MENU.HOME).click()
+            cy.contains('td', 'Conta fake')
+                .next()
+                .invoke('text').then(t => t.replace(/\u00a0/g, ' ').trim())
+                .should('contain', 'R$ 123.456,00')
+        })
     })
 
     it('Should delete a transaction', () => {
