@@ -5,7 +5,7 @@ import '../../../support/commandsAccount'
 import buildEnv from '../../../support/buildEnv'
 
 
-describe("all functional tests", () => {
+describe("all frontend tests", () => {
     beforeEach(() => {
         const email = "email"
         const psw = "psw"
@@ -134,7 +134,7 @@ describe("all functional tests", () => {
 
     })
 
-    it.only('Should check colors', () => {
+    it('Should check colors', () => {
         cy.fixture('barrigaData').then((dados) => {
             cy.intercept({
                 method: 'GET',
@@ -152,6 +152,20 @@ describe("all functional tests", () => {
 
         })
     })
+    it('Should check responsiveness', () => {
+        cy.get('[data-test="menu-home"]').should('exist')
+        .and('be.visible')
+        cy.viewport(400,800)
+        cy.get('[data-test="menu-home"]').should('exist')
+        .and('not.be.visible')
+        cy.viewport('iphone-5')
+        cy.get('[data-test="menu-home"]').should('exist')
+        .and('not.be.visible')
+        cy.viewport('ipad-2')
+        cy.get('[data-test="menu-home"]').should('exist')
+        .and('be.visible')
+    })
+
 
  })
 
