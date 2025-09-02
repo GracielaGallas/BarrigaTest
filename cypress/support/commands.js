@@ -1,13 +1,13 @@
 import loc from './locators'
 
 Cypress.SelectorPlayground.defaults({
-    selectorPriority: ['data-wc', 'data-cy', 'data-test', 'data-testid', 'id', 'class', 'attributes', 'tag', 'nth-child']
+    selectorPriority: ['data-selenium', 'data-cy', 'data-test', 'data-testid', 'id', 'class', 'attributes', 'tag', 'nth-child']
 })
 
 
 
 Cypress.Commands.add('login', (user, password) => {
-    cy.visit("https://barrigareact.wcaquino.me/")
+    cy.visit("https://thg.dev.aws.onpier.de/")
 
     cy.get(loc.LOGIN.USER).type(user)
     cy.get(loc.LOGIN.PASSWORD).type(password)

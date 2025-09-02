@@ -1,0 +1,14 @@
+cat > .gitignore <<'EOF'
+node_modules/
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+.env
+.env.*
+.DS_Store
+EOF

@@ -1,0 +1,31 @@
+# dependências e cache locais
+node_modules
+npm-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+# artefatos do Cypress
+cypress/videos
+cypress/screenshots
+
+# VCS / editor / SO
+.git
+.gitignore
+.github
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# builds e temporários
+dist
+build
+coverage
+tmp
+logs
+*.log
+
+# segredos locais (não envie para imagem)
+.env
+.env.*
+.npmrc
